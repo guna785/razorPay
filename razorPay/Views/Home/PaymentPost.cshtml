@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewData["Title"] = "PaymentPost";
+}
+
+<div class="container">
+    <form asp-action="ChechIn" method="post" asp-controller="Home">
+        <script src="https://checkout.razorpay.com/v1/checkout.js"
+                data-key="rzp_test_EdbyY6ssXBY0KD"
+                data-amount="@ViewBag.amt"
+                data-name="Razorpay"
+                data-description="Purchase Description"
+                data-order_id="@ViewBag.orderId"
+                data-image="https://razorpay.com/favicon.png"
+                data-prefill.name="@ViewBag.name"
+                data-prefill.email="@ViewBag.email"
+                data-prefill.contact="@ViewBag.contact"
+                data-theme.color="#F37254"></script>
+    </form>
+</div>
+

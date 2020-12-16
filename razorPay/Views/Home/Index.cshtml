@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <div class="container">
+        <form asp-action="ChechIn" method="post" asp-controller="Home">
+
+            <div class="form-group">
+                <label for="email">Name:</label>
+                <input type="text" class="form-control" id="name" name="name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email address:</label>
+                <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="pwd">Password:</label>
+                <input type="number" class="form-control" id="Phone" name="phone">
+            </div>
+            <script src="https://checkout.razorpay.com/v1/checkout.js"
+                    data-key="rzp_test_EdbyY6ssXBY0KD"
+                    data-amount="100"
+                    data-name="Razorpay"
+                    data-description="Purchase Description"
+                    data-order_id="@ViewBag.orderId"
+                    data-image="https://razorpay.com/favicon.png"
+                    data-prefill.name="Gaurav Kumar"
+                    data-prefill.email="gaurav.kumar@example.com"
+                    data-prefill.contact="9123456789"
+                    data-theme.color="#F37254"></script>
+        </form>
+        
+    </div>
+       
+</div>
