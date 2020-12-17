@@ -20,7 +20,7 @@ namespace razorPay
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>().UseUrls(new[] { "http://localhost:5003" }); ;
                 });
     }
 }
