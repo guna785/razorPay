@@ -24,7 +24,7 @@ namespace razorPay.Controllers
         {
             Dictionary<string, object> input = new Dictionary<string, object>();
             input.Add("amount", 100); // this amount should be same as transaction amount
-            input.Add("currency", "INR");
+            input.Add("currency", "USD");
             input.Add("receipt", "12121");
             input.Add("payment_capture", 1);
 

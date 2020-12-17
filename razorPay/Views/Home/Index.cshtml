@@ -1,36 +1,78 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<div class="text-center">
-    <div class="container">
-        <form asp-action="ChechIn" method="post" asp-controller="Home">
-
-            <div class="form-group">
-                <label for="email">Name:</label>
-                <input type="text" class="form-control" id="name" name="name">
-            </div>
-            <div class="form-group">
-                <label for="email">Email address:</label>
-                <input type="email" class="form-control" id="email" name="email">
-            </div>
-            <div class="form-group">
-                <label for="pwd">Password:</label>
-                <input type="number" class="form-control" id="Phone" name="phone">
-            </div>
-            <script src="https://checkout.razorpay.com/v1/checkout.js"
-                    data-key="rzp_test_EdbyY6ssXBY0KD"
-                    data-amount="100"
-                    data-name="Razorpay"
-                    data-description="Purchase Description"
-                    data-order_id="@ViewBag.orderId"
-                    data-image="https://razorpay.com/favicon.png"
-                    data-prefill.name="Gaurav Kumar"
-                    data-prefill.email="gaurav.kumar@example.com"
-                    data-prefill.contact="9123456789"
-                    data-theme.color="#F37254"></script>
-        </form>
-        
-    </div>
-       
+<div id="stsSuccess" class="form-group text-center">
+    <label style="padding:10px;" class="col-form-label bg-success">Payment Success</label>
 </div>
+<div id="stsFailure" class="form-group  text-center">
+    <label style="padding:10px;" class="col-form-label bg-danger">Payment Failed</label>
+</div>
+<form action="javascript:void(0);" onSubmit="RazorPay();">
+
+    <div class="form-group">
+        <label>First Name</label>
+        <input required type="text" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Last Name</label>
+        <input required type="text" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Email Id</label>
+        <input required type="email" class="form-control" />
+    </div>
+    @*<script src="https://checkout.razorpay.com/v1/checkout.js"
+        data-key="rzp_test_EdbyY6ssXBY0KD"
+        data-amount="100"
+        data-name="Razorpay"
+        data-description="Purchase Description"
+        data-order_id="@ViewBag.orderId"
+        data-image="https://razorpay.com/favicon.png"
+        data-prefill.name="Gaurav Kumar"
+        data-prefill.email="gaurav.kumar@example.com"
+        data-prefill.contact="9123456789"
+        data-theme.color="#F37254"></script>*@
+    <button id="rzp-button1" type="submit" class="btn btn-success"> Donate Now </button>
+
+
+</form>
+<script>
+    $("#stsFailure").hide();
+    $("#stsSuccess").hide();
+                var options = {
+                    "key": "rzp_test_EdbyY6ssXBY0KD", // Enter the Key ID generated from the Dashboard
+                    "amount": "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                    "currency": "USD",
+                    "name": "Acme Corp",
+                    "description": "Test Transaction",
+                    "image": "https://razorpay.com/favicon.png",
+                    "order_id": "@ViewBag.orderId", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                    "handler": function (response) {
+                        $("#stsFailure").hide();
+                        $("#stsSuccess").show();
+                    },
+                    "prefill": {
+                        "name": "Gaurav Kumar",
+                        "email": "gaurav.kumar@example.com",
+                        "contact": "9999999999"
+                    },
+                    "notes": {
+                        "address": "Razorpay Corporate Office"
+                    },
+                    "theme": {
+                        "color": "#3399cc"
+                    }
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response) {
+
+                    $("#stsFailure").show();
+                    $("#stsSuccess").hide();
+                });
+
+                function RazorPay () {
+                    rzp1.open();
+                }
+</script>
