@@ -12,16 +12,21 @@
 <form action="javascript:void(0);" onSubmit="RazorPay();">
 
     <div class="form-group">
-        <label>First Name</label>
-        <input required type="text" class="form-control" />
+        <label>Name</label>
+        <input required type="text" id="name" class="form-control" />
     </div>
-    <div class="form-group">
-        <label>Last Name</label>
-        <input required type="text" class="form-control" />
-    </div>
+
     <div class="form-group">
         <label>Email Id</label>
-        <input required type="email" class="form-control" />
+        <input required type="email" id="mail" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Phone</label>
+        <input required type="number" id="phone" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Amount</label>
+        <input required type="number" id="amt" class="form-control" />
     </div>
     @*<script src="https://checkout.razorpay.com/v1/checkout.js"
         data-key="rzp_test_EdbyY6ssXBY0KD"
@@ -41,22 +46,26 @@
 <script>
     $("#stsFailure").hide();
     $("#stsSuccess").hide();
-                var options = {
-                    "key": "rzp_test_EdbyY6ssXBY0KD", // Enter the Key ID generated from the Dashboard
-                    "amount": "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    var orderID = "@ViewBag.orderId";
+
+
+    function RazorPay() {
+           var options = {
+               "key": "rzp_test_EdbyY6ssXBY0KD", // Enter the Key ID generated from the Dashboard
+               "amount": $("#amt").val(), // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
                     "currency": "USD",
                     "name": "Acme Corp",
                     "description": "Test Transaction",
                     "image": "https://razorpay.com/favicon.png",
-                    "order_id": "@ViewBag.orderId", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                    "order_id": orderID, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
                     "handler": function (response) {
                         $("#stsFailure").hide();
                         $("#stsSuccess").show();
                     },
-                    "prefill": {
-                        "name": "Gaurav Kumar",
-                        "email": "gaurav.kumar@example.com",
-                        "contact": "9999999999"
+                         "prefill": {
+                             "name": $("#name").val(),
+                             "email": $("#mail").val(),
+                             "contact": $("#phone").val()
                     },
                     "notes": {
                         "address": "Razorpay Corporate Office"
@@ -71,8 +80,6 @@
                     $("#stsFailure").show();
                     $("#stsSuccess").hide();
                 });
-
-                function RazorPay () {
-                    rzp1.open();
-                }
+               rzp1.open();
+    }
 </script>
