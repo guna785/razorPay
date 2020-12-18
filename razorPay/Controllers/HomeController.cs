@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using razorPay.Models;
 using Razorpay.Api;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace razorPay.Controllers
@@ -14,29 +17,47 @@ namespace razorPay.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        public string orderId;
+        public string key,secret,currency, payment_capture;
+       
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
+            var configBuilder = new ConfigurationBuilder();
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
+            configBuilder.AddJsonFile(path, false);
+            var root = configBuilder.Build();
+            var conStrConfig = root.GetSection("RazorPay:key");
+            var conDB = root.GetSection("RazorPay:secret");
+            var cur = root.GetSection("RazorPay:currency");
+            var pcapture = root.GetSection("RazorPay:payment_capture");
+            key = conStrConfig.Value;
+            secret = conDB.Value;
+            currency = cur.Value;
+            payment_capture = pcapture.Value;
         }
 
         public IActionResult Index()
         {
-            Dictionary<string, object> input = new Dictionary<string, object>();
-            input.Add("amount", 100); // this amount should be same as transaction amount
-            input.Add("currency", "USD");
-            input.Add("receipt", "12121");
-            input.Add("payment_capture", 1);
+            ViewBag.key = key;
+            ViewBag.secret = secret;
 
-            string key = "rzp_test_EdbyY6ssXBY0KD";
-            string secret = "x3iIXErqBtpuzSSzqopAgBL1";
+            return View();
+        }
+        [HttpPost]
+        public IActionResult getOrderID([FromBody] Models.Payment pay)
+        {            
+            Dictionary<string, object> input = new Dictionary<string, object>();
+            input.Add("amount", pay.amt); // this amount should be same as transaction amount
+            input.Add("currency", currency);
+            input.Add("receipt", GetRandomNumber());
+            input.Add("payment_capture", payment_capture);
+
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             RazorpayClient client = new RazorpayClient(key, secret);
 
             Razorpay.Api.Order order = client.Order.Create(input);
-            ViewBag.orderId = order["id"].ToString();
-
-            return View();
+            var orderId = order["id"].ToString();
+            return  Ok(new { orderID = orderId });
         }
         [HttpPost]
         public IActionResult PaymentPost()
@@ -58,8 +79,8 @@ namespace razorPay.Controllers
             Dictionary<string, object> input = new Dictionary<string, object>();
             input.Add("amount", 100); // this amount should be same as transaction amount
 
-            string key = "rzp_test_EdbyY6ssXBY0KD";
-            string secret = "x3iIXErqBtpuzSSzqopAgBL1";
+            string key = "rzp_live_mvhUwNIUpJavYy";
+            string secret = "RlUy7d10QDYvTBLjoeI9Qku4";
 
             RazorpayClient client = new RazorpayClient(key, secret);
 
@@ -77,7 +98,17 @@ namespace razorPay.Controllers
         {
             return View();
         }
-
+        [NonAction]
+        public string GetRandomNumber()
+        {
+            using (RNGCryptoServiceProvider rg = new RNGCryptoServiceProvider())
+            {
+                byte[] rno = new byte[6];
+                rg.GetBytes(rno);
+                int randomvalue = BitConverter.ToInt32(rno, 0);
+                return randomvalue.ToString();
+            }
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

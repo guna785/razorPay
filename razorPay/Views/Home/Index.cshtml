@@ -47,25 +47,37 @@
     $("#stsFailure").hide();
     $("#stsSuccess").hide();
     var orderID = "@ViewBag.orderId";
-
+    var key = "@ViewBag.key";
 
     function RazorPay() {
-           var options = {
-               "key": "rzp_test_EdbyY6ssXBY0KD", // Enter the Key ID generated from the Dashboard
-               "amount": $("#amt").val(), // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        var data = {
+            "amt":$("#amt").val()
+        }
+        $.ajax({
+            url: "/Home/getOrderID",
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            processData: false,
+            async: true,
+            success: function (response) {
+                var options = {
+                    "key": key, // Enter the Key ID generated from the Dashboard
+                    "amount": $("#amt").val(), // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
                     "currency": "USD",
-                    "name": "Acme Corp",
-                    "description": "Test Transaction",
+                    "name": "Payment ",
+                    "description": "Transaction",
                     "image": "https://razorpay.com/favicon.png",
-                    "order_id": orderID, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                    "order_id": response.orderID, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
                     "handler": function (response) {
                         $("#stsFailure").hide();
                         $("#stsSuccess").show();
                     },
-                         "prefill": {
-                             "name": $("#name").val(),
-                             "email": $("#mail").val(),
-                             "contact": $("#phone").val()
+                    "prefill": {
+                        "name": $("#name").val(),
+                        "email": $("#mail").val(),
+                        "contact": $("#phone").val()
                     },
                     "notes": {
                         "address": "Razorpay Corporate Office"
@@ -80,6 +92,12 @@
                     $("#stsFailure").show();
                     $("#stsSuccess").hide();
                 });
-               rzp1.open();
+                rzp1.open();
+            },
+            error: function (e) {
+               
+            }
+        });
+           
     }
 </script>
